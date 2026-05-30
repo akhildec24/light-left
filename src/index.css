@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light theme — off-white canvas, charcoal text */
+    --color-canvas: 245 245 240;     /* #F5F5F0 */
+    --color-panel: 232 232 227;      /* #E8E8E3 */
+    --color-mist: 212 212 207;       /* #D4D4CF */
+    --color-charcoal: 43 43 43;      /* #2B2B2B */
+    --color-matte: 26 26 26;         /* #1A1A1A */
+    --color-signal: 214 40 40;       /* #D62828 */
+    --color-amber: 233 168 0;        /* #E9A800 */
+    --color-olive: 107 107 58;       /* #6B6B3A */
+    --color-steel: 74 107 124;       /* #4A6B7C */
+  }
+
+  .dark {
+    /* Dark theme — swap light/dark roles */
+    --color-canvas: 26 26 26;        /* #1A1A1A — main bg becomes dark */
+    --color-panel: 43 43 43;         /* #2B2B2B — panels become charcoal */
+    --color-mist: 58 58 58;          /* #3A3A3A — grey becomes dark grey */
+    --color-charcoal: 245 245 240;   /* #F5F5F0 — text becomes light */
+    --color-matte: 17 17 17;         /* #111111 — deepest dark */
+    --color-signal: 214 40 40;       /* unchanged */
+    --color-amber: 233 168 0;        /* unchanged */
+    --color-olive: 107 107 58;       /* unchanged */
+    --color-steel: 74 107 124;       /* unchanged */
+  }
+
+  /* High contrast overrides */
+  .high-contrast {
+    --color-canvas: 255 255 255;
+    --color-panel: 240 240 240;
+    --color-mist: 200 200 200;
+    --color-charcoal: 0 0 0;
+  }
+  .high-contrast.dark {
+    --color-canvas: 0 0 0;
+    --color-panel: 30 30 30;
+    --color-mist: 50 50 50;
+    --color-charcoal: 255 255 255;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: rgb(var(--color-canvas));
+    color: rgb(var(--color-charcoal));
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-feature-settings: 'tnum' 1, 'cv01' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior: none;
+  }
+
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Text size levels */
+  .text-sm body { font-size: 14px; }
+  .text-sm .text-6xl { font-size: 3.25rem; }
+  .text-sm .text-7xl { font-size: 3.75rem; }
+  .text-sm .text-8xl { font-size: 4.5rem; }
+  .text-sm .text-5xl { font-size: 2.75rem; }
+  .text-sm .text-4xl { font-size: 2rem; }
+  .text-sm .text-3xl { font-size: 1.625rem; }
+  .text-sm .text-sm { font-size: 0.75rem; }
+  .text-sm .text-xs { font-size: 0.6875rem; }
+  .text-sm .text-\[11px\] { font-size: 0.6875rem; }
+  .text-sm .text-\[10px\] { font-size: 0.625rem; }
+
+  .text-large body { font-size: 17px; }
+  .text-large .text-6xl { font-size: 4.5rem; }
+  .text-large .text-7xl { font-size: 5rem; }
+  .text-large .text-8xl { font-size: 6rem; }
+  .text-large .text-5xl { font-size: 3.5rem; }
+  .text-large .text-4xl { font-size: 2.5rem; }
+  .text-large .text-3xl { font-size: 2rem; }
+  .text-large .text-sm { font-size: 0.875rem; }
+  .text-large .text-xs { font-size: 0.8125rem; }
+  .text-large .text-\[11px\] { font-size: 0.8125rem; }
+  .text-large .text-\[10px\] { font-size: 0.75rem; }
+
+  .text-xl body { font-size: 19px; }
+  .text-xl .text-6xl { font-size: 5.25rem; }
+  .text-xl .text-7xl { font-size: 6rem; }
+  .text-xl .text-8xl { font-size: 7rem; }
+  .text-xl .text-5xl { font-size: 4rem; }
+  .text-xl .text-4xl { font-size: 2.875rem; }
+  .text-xl .text-3xl { font-size: 2.25rem; }
+  .text-xl .text-sm { font-size: 0.9375rem; }
+  .text-xl .text-xs { font-size: 0.875rem; }
+  .text-xl .text-\[11px\] { font-size: 0.875rem; }
+  .text-xl .text-\[10px\] { font-size: 0.8125rem; }
+
+  /* Reduced motion */
+  .reduced-motion * {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+  }
+  .reduced-motion .animate-pulse-dot {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .animate-pulse-dot {
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+}
