@@ -26,6 +26,7 @@ export function useGeolocation() {
             lat: position.coords.latitude,
             lon: position.coords.longitude,
             accuracy: position.coords.accuracy,
+            altitude: position.coords.altitude ?? null,
           },
           error: null,
           loading: false,

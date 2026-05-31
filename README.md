@@ -19,7 +19,7 @@ A minimal, precise daylight tracker that detects your location, calculates remai
 
 - React 18 + Vite
 - Tailwind CSS (CSS variable theming)
-- SunCalc for sun position calculations
+- NREL Solar Position Algorithm (SPA) via sunrise-sunset-js — ±0.0003° accuracy, ±30s for rise/set times
 - Open-Meteo API for weather data
 - BigDataCloud for reverse geocoding
 

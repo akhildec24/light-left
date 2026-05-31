@@ -1,46 +1,87 @@
-import SunCalc from 'suncalc'
+import { getSunTimes, getSolarPosition } from 'sunrise-sunset-js'
 
 /**
  * Get sun events for a given location and date.
- * Returns sunrise, sunset, goldenHour, dawn, dusk, etc.
+ * Uses NREL's Solar Position Algorithm (SPA) for high-precision calculations
+ * (±0.0003° accuracy, ±30 seconds for rise/set times).
+ *
+ * @param {number} lat - Latitude in decimal degrees
+ * @param {number} lon - Longitude in decimal degrees
+ * @param {Date} date - Date to calculate for (defaults to now)
+ * @param {number} elevation - Observer elevation in meters (default: 0)
+ * @returns {object} Sun events: sunrise, sunset, goldenHour, dawn, dusk, etc.
  */
-export function getSunEvents(lat, lon, date = new Date()) {
-  const times = SunCalc.getTimes(date, lat, lon)
+export function getSunEvents(lat, lon, date = new Date(), elevation = 0) {
+  const options = { elevation }
+  const times = getSunTimes(lat, lon, date, options)
+
+  if (!times) {
+    return {
+      sunrise: null,
+      sunset: null,
+      goldenHour: null,
+      goldenHourEnd: null,
+      dawn: null,
+      dusk: null,
+      nauticalDusk: null,
+      nauticalDawn: null,
+      night: null,
+      nightEnd: null,
+    }
+  }
+
+  const tw = times.twilight || {}
+
   return {
     sunrise: times.sunrise,
     sunset: times.sunset,
-    goldenHour: times.goldenHour,
-    goldenHourEnd: times.goldenHourEnd,
-    dawn: times.dawn,
-    dusk: times.dusk,
-    nauticalDusk: times.nauticalDusk,
-    nauticalDawn: times.nauticalDawn,
-    night: times.night,
-    nightEnd: times.nightEnd,
+    goldenHour: tw.goldenHour?.evening?.start ?? null,
+    goldenHourEnd: tw.goldenHour?.morning?.end ?? null,
+    dawn: tw.civilDawn ?? null,
+    dusk: tw.civilDusk ?? null,
+    nauticalDusk: tw.nauticalDusk ?? null,
+    nauticalDawn: tw.nauticalDawn ?? null,
+    night: tw.astronomicalDusk ?? null,
+    nightEnd: tw.astronomicalDawn ?? null,
   }
 }
 
 /**
  * Get current sun position (altitude, azimuth).
+ * Uses NREL SPA for high-precision solar position.
+ *
+ * @param {number} lat - Latitude in decimal degrees
+ * @param {number} lon - Longitude in decimal degrees
+ * @param {Date} date - Date to calculate for (defaults to now)
+ * @param {number} elevation - Observer elevation in meters (default: 0)
+ * @returns {object} Sun position: altitude (radians), azimuth (radians), altitudeDeg, azimuthDeg
  */
-export function getSunPosition(lat, lon, date = new Date()) {
-  const pos = SunCalc.getPosition(date, lat, lon)
+export function getSunPosition(lat, lon, date = new Date(), elevation = 0) {
+  const pos = getSolarPosition(lat, lon, date, { elevation })
+  if (!pos) {
+    return { altitude: 0, azimuth: 0, altitudeDeg: 0, azimuthDeg: 0 }
+  }
   return {
-    altitude: pos.altitude, // radians
-    azimuth: pos.azimuth,   // radians
-    altitudeDeg: pos.altitude * (180 / Math.PI),
-    azimuthDeg: pos.azimuth * (180 / Math.PI),
+    altitude: pos.elevation * (Math.PI / 180),
+    azimuth: pos.azimuth * (Math.PI / 180),
+    altitudeDeg: pos.elevation,
+    azimuthDeg: pos.azimuth,
   }
 }
 
 /**
  * Determine the current daylight phase.
+ * Uses civil dawn/dusk (sun at -6°) as the boundary for dawn/dusk phases.
+ *
+ * @param {object} sunEvents - Sun events from getSunEvents()
+ * @param {Date} now - Current time (defaults to now)
+ * @returns {string} Phase: 'before_dawn', 'dawn', 'day', 'dusk', 'night'
  */
 export function getDaylightPhase(sunEvents, now = new Date()) {
-  if (now < sunEvents.dawn) return 'before_dawn'
-  if (now < sunEvents.sunrise) return 'dawn'
-  if (now < sunEvents.sunset) return 'day'
-  if (now < sunEvents.dusk) return 'dusk'
+  if (sunEvents.dawn && now < sunEvents.dawn) return 'before_dawn'
+  if (sunEvents.sunrise && now < sunEvents.sunrise) return 'dawn'
+  if (sunEvents.sunset && now < sunEvents.sunset) return 'day'
+  if (sunEvents.dusk && now < sunEvents.dusk) return 'dusk'
   return 'night'
 }
 

@@ -4,3 +4,6 @@ dist
 *.local
 .env
 .env.*
+server.js
+ecosystem.config.js
+deploy.sh

@@ -59,7 +59,7 @@ export default function App() {
   // Compute sun events and effective sunset
   const sunEvents = useMemo(() => {
     if (!coords) return null
-    return getSunEvents(coords.lat, coords.lon, now)
+    return getSunEvents(coords.lat, coords.lon, now, coords.altitude ?? 0)
   }, [coords, now])
 
   const effectiveSunsetData = useMemo(() => {
@@ -86,7 +86,7 @@ export default function App() {
       // After dusk — today's sunrise has passed, count down to tomorrow's
       const tomorrow = new Date(now)
       tomorrow.setDate(tomorrow.getDate() + 1)
-      const tomorrowEvents = getSunEvents(coords.lat, coords.lon, tomorrow)
+      const tomorrowEvents = getSunEvents(coords.lat, coords.lon, tomorrow, coords.altitude ?? 0)
       return tomorrowEvents.sunrise
     }
     if (phase === 'dawn' || phase === 'day' || phase === 'dusk') {
@@ -233,7 +233,7 @@ export default function App() {
       <footer className="px-6 pb-6 sm:pb-8 flex justify-center">
         <p className="text-[10px] text-charcoal/25 uppercase tracking-wide-lg">
           {isNight
-            ? `Sunrise at ${sunEvents ? formatTime(phase === 'before_dawn' ? sunEvents.sunrise : getSunEvents(coords.lat, coords.lon, new Date(now.getTime() + 86400000)).sunrise) : '--:--'}`
+            ? `Sunrise at ${sunEvents ? formatTime(phase === 'before_dawn' ? sunEvents.sunrise : getSunEvents(coords.lat, coords.lon, new Date(now.getTime() + 86400000), coords.altitude ?? 0).sunrise) : '--:--'}`
             : `Sunset at ${sunEvents ? formatTime(sunEvents.sunset) : '--:--'}`
           }
         </p>
