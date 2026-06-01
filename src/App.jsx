@@ -56,11 +56,13 @@ export default function App() {
     return () => { cancelled = true }
   }, [coords])
 
-  // Compute sun events and effective sunset
+  // Only recalculate sun events when the date changes (not every second)
+  const dateKey = now.toDateString()
   const sunEvents = useMemo(() => {
     if (!coords) return null
     return getSunEvents(coords.lat, coords.lon, now, coords.altitude ?? 0)
-  }, [coords, now])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coords, dateKey])
 
   const effectiveSunsetData = useMemo(() => {
     if (!sunEvents?.sunset) return null
@@ -87,7 +89,7 @@ export default function App() {
       const tomorrow = new Date(now)
       tomorrow.setDate(tomorrow.getDate() + 1)
       const tomorrowEvents = getSunEvents(coords.lat, coords.lon, tomorrow, coords.altitude ?? 0)
-      return tomorrowEvents.sunrise
+      return tomorrowEvents.sunrise ?? null
     }
     if (phase === 'dawn' || phase === 'day' || phase === 'dusk') {
       return effectiveSunset

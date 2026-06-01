@@ -79,7 +79,7 @@ export async function reverseGeocode(lat, lon) {
   const data = await res.json()
 
   const city = data.city || data.locality || data.principalSubdivision || null
-  const country = data.countryName || data.countryCode || null
+  const country = (data.countryName || data.countryCode || null)?.replace(/\s*\(the\)\s*$/i, '')
   const region = data.principalSubdivision || null
 
   let label = city

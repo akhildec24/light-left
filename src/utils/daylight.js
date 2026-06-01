@@ -128,8 +128,8 @@ export function getProgress(start, end, now = new Date()) {
  * the usable daylight before the actual sunset.
  */
 export function calculateEffectiveSunset(sunset, weather) {
-  if (!sunset || isNaN(sunset.getTime())) return sunset
-  if (!weather) return sunset
+  if (!sunset || isNaN(sunset.getTime())) return null
+  if (!weather) return { time: sunset, adjustmentMinutes: 0 }
 
   let adjustmentMinutes = 0
 

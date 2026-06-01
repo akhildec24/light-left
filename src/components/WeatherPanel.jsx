@@ -8,7 +8,7 @@ export default function WeatherPanel({ weather, adjustmentMinutes }) {
   if (!weather) return null
 
   const info = getWeatherInfo(weather.weatherCode)
-  const hasAdjustment = adjustmentMinutes && adjustmentMinutes < 0
+  const hasAdjustment = adjustmentMinutes !== 0 && adjustmentMinutes < 0
 
   return (
     <div className="flex flex-col items-center gap-3">

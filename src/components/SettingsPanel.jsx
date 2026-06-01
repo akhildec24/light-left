@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { CloseIcon } from './Icons.jsx'
 import RadioDial from './RadioDial.jsx'
 import { THEMES, FONT_STYLES, TEXT_SIZES } from '../hooks/useSettings.js'
@@ -59,6 +60,15 @@ function Toggle({ label, description, checked, onChange }) {
 }
 
 export default function SettingsPanel({ open, onClose, settings, onUpdate, onReset }) {
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [open, onClose])
+
   if (!open) return null
 
   return (
