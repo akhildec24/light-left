@@ -44,7 +44,9 @@ export async function fetchWeather(lat, lon) {
     latitude: lat.toFixed(4),
     longitude: lon.toFixed(4),
     current: 'cloud_cover,precipitation,weather_code,visibility,temperature_2m',
+    daily: 'temperature_2m_max,temperature_2m_min',
     timezone: 'auto',
+    forecast_days: '1',
   })
 
   const url = `https://api.open-meteo.com/v1/forecast?${params}`
@@ -53,12 +55,39 @@ export async function fetchWeather(lat, lon) {
   const data = await res.json()
 
   const current = data.current ?? {}
+  const daily = data.daily ?? {}
   return {
     cloudCover: current.cloud_cover ?? 0,
     precipitation: current.precipitation ?? 0,
     weatherCode: current.weather_code ?? 0,
     visibility: current.visibility ?? 10000,
     temperature: current.temperature_2m ?? null,
+    tempMax: daily.temperature_2m_max?.[0] ?? null,
+    tempMin: daily.temperature_2m_min?.[0] ?? null,
+  }
+}
+
+/**
+ * Fetch current air quality from Open-Meteo Air Quality API (free, no API key).
+ */
+export async function fetchAirQuality(lat, lon) {
+  const params = new URLSearchParams({
+    latitude: lat.toFixed(4),
+    longitude: lon.toFixed(4),
+    current: 'european_aqi,pm2_5,pm10',
+    timezone: 'auto',
+  })
+
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`Air quality API error: ${res.status}`)
+  const data = await res.json()
+
+  const current = data.current ?? {}
+  return {
+    europeanAQI: current.european_aqi ?? null,
+    pm2_5: current.pm2_5 ?? null,
+    pm10: current.pm10 ?? null,
   }
 }
 

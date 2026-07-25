@@ -8,7 +8,7 @@ import {
   calculateEffectiveSunset,
   formatTime,
 } from './utils/daylight.js'
-import { fetchWeather, reverseGeocode } from './utils/weather.js'
+import { fetchWeather, fetchAirQuality, reverseGeocode } from './utils/weather.js'
 import LocationHeader from './components/LocationHeader.jsx'
 import DaylightClock from './components/DaylightClock.jsx'
 import DaylightBar from './components/DaylightBar.jsx'
@@ -24,6 +24,7 @@ export default function App() {
   const { coords, error: geoError, loading: geoLoading, request: requestGeo } = useGeolocation()
 
   const [weather, setWeather] = useState(null)
+  const [airQuality, setAirQuality] = useState(null)
   const [location, setLocation] = useState(null)
   const [dataError, setDataError] = useState(null)
   const [dataLoading, setDataLoading] = useState(false)
@@ -38,11 +39,13 @@ export default function App() {
 
     Promise.all([
       fetchWeather(coords.lat, coords.lon),
+      fetchAirQuality(coords.lat, coords.lon).catch(() => null),
       reverseGeocode(coords.lat, coords.lon),
     ])
-      .then(([w, loc]) => {
+      .then(([w, aq, loc]) => {
         if (cancelled) return
         setWeather(w)
+        setAirQuality(aq)
         setLocation(loc.label)
       })
       .catch((err) => {
@@ -161,20 +164,30 @@ export default function App() {
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <button
-            onClick={handleRefresh}
-            className="p-2 rounded-full text-charcoal/30 hover:text-charcoal/60 hover:bg-panel transition-colors"
-            aria-label="Refresh location"
-          >
-            <RefreshIcon className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="p-2 rounded-full text-charcoal/30 hover:text-charcoal/60 hover:bg-panel transition-colors"
-            aria-label="Open settings"
-          >
-            <GearIcon className="w-4 h-4" />
-          </button>
+          <div className="relative group">
+            <button
+              onClick={handleRefresh}
+              className="p-2 rounded-full text-charcoal/30 hover:text-charcoal/60 hover:bg-panel transition-colors"
+              aria-label="Refresh location"
+            >
+              <RefreshIcon className="w-4 h-4" />
+            </button>
+            <span className="pointer-events-none absolute top-full right-0 mt-1 px-2 py-1 rounded bg-charcoal text-canvas text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              Refresh
+            </span>
+          </div>
+          <div className="relative group">
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="p-2 rounded-full text-charcoal/30 hover:text-charcoal/60 hover:bg-panel transition-colors"
+              aria-label="Open settings"
+            >
+              <GearIcon className="w-4 h-4" />
+            </button>
+            <span className="pointer-events-none absolute top-full right-0 mt-1 px-2 py-1 rounded bg-charcoal text-canvas text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              Settings
+            </span>
+          </div>
         </div>
       </header>
 
@@ -211,6 +224,7 @@ export default function App() {
         {weather && (
           <WeatherPanel
             weather={weather}
+            airQuality={airQuality}
             adjustmentMinutes={adjustmentMinutes}
           />
         )}
