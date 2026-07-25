@@ -154,6 +154,45 @@ export default function SettingsPanel({ open, onClose, settings, onUpdate, onRes
             {/* Divider */}
             <div className="h-px bg-mist" />
 
+            {/* About */}
+            <div className="flex flex-col gap-3">
+              <span className="text-[10px] uppercase tracking-wide-lg text-charcoal/30 font-semibold">
+                About
+              </span>
+              <p className="text-[11px] text-charcoal/50 leading-relaxed">
+                lightleft calculates remaining daylight using the NREL Solar Position Algorithm
+                — accurate to ±30 seconds. Weather data from Open-Meteo adjusts the effective
+                sunset based on cloud cover, precipitation, and visibility.
+              </p>
+
+              <div className="flex flex-col gap-2 mt-1">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[11px] font-medium text-charcoal/70">Temperature</span>
+                  <span className="text-[10px] text-charcoal/40 leading-relaxed">
+                    Shown in Celsius. The second number is today's forecast low.
+                  </span>
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[11px] font-medium text-charcoal/70">Air Quality (European AQI)</span>
+                  <span className="text-[10px] text-charcoal/40 leading-relaxed">
+                    0–20 Good · 20–40 Fair · 40–60 Moderate · 60–80 Poor · 80–100 Very Poor · 100+ Extremely Poor
+                  </span>
+                </div>
+              </div>
+
+              <a
+                href="https://github.com/akhildec24/light-left"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-charcoal/40 hover:text-charcoal/70 transition-colors mt-1"
+              >
+                github.com/akhildec24/light-left
+              </a>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-mist" />
+
             {/* Reset */}
             <button
               onClick={onReset}
