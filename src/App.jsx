@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useGeolocation } from './hooks/useGeolocation.js'
 import { useNow } from './hooks/useNow.js'
 import {
@@ -29,18 +29,16 @@ export default function App() {
   const [dataError, setDataError] = useState(null)
   const [dataLoading, setDataLoading] = useState(false)
 
-  // Fetch weather + reverse geocode when coords change
-  useEffect(() => {
-    if (!coords) return
-
+  // Fetch weather + air quality + reverse geocode
+  const fetchAllData = useCallback((lat, lon, isRefresh = false) => {
     let cancelled = false
-    setDataLoading(true)
+    if (!isRefresh) setDataLoading(true)
     setDataError(null)
 
     Promise.all([
-      fetchWeather(coords.lat, coords.lon),
-      fetchAirQuality(coords.lat, coords.lon).catch(() => null),
-      reverseGeocode(coords.lat, coords.lon),
+      fetchWeather(lat, lon),
+      fetchAirQuality(lat, lon).catch(() => null),
+      reverseGeocode(lat, lon),
     ])
       .then(([w, aq, loc]) => {
         if (cancelled) return
@@ -57,7 +55,22 @@ export default function App() {
       })
 
     return () => { cancelled = true }
-  }, [coords])
+  }, [])
+
+  // Initial fetch when coords change
+  useEffect(() => {
+    if (!coords) return
+    return fetchAllData(coords.lat, coords.lon)
+  }, [coords, fetchAllData])
+
+  // Poll every 30 minutes to keep weather fresh
+  useEffect(() => {
+    if (!coords) return
+    const id = setInterval(() => {
+      fetchAllData(coords.lat, coords.lon, true)
+    }, 30 * 60 * 1000)
+    return () => clearInterval(id)
+  }, [coords, fetchAllData])
 
   // Only recalculate sun events when the date changes (not every second)
   const dateKey = now.toDateString()
@@ -94,8 +107,15 @@ export default function App() {
       const tomorrowEvents = getSunEvents(coords.lat, coords.lon, tomorrow, coords.altitude ?? 0)
       return tomorrowEvents.sunrise ?? null
     }
-    if (phase === 'dawn' || phase === 'day' || phase === 'dusk') {
-      return effectiveSunset
+    if (phase === 'dawn') {
+      return sunEvents.sunrise
+    }
+    if (phase === 'day') {
+      if (effectiveSunset && now < effectiveSunset) return effectiveSunset
+      return sunEvents.sunset
+    }
+    if (phase === 'dusk') {
+      return sunEvents.dusk ?? sunEvents.sunset
     }
     return sunEvents.sunset
   }, [sunEvents, phase, effectiveSunset, now, coords])

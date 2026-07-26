@@ -9,6 +9,8 @@ A minimal, precise daylight tracker that detects your location, calculates remai
 - **Location-based** — auto-detects your position for accurate sun timing
 - **NREL SPA accuracy** — ±0.0003° solar position, ±30s for rise/set times (includes nutation, aberration, dynamic refraction, and elevation correction via GPS altitude)
 - **Weather-adjusted** — cloud cover, precipitation, fog, and visibility reduce effective daylight
+- **Auto-refresh** — weather and air quality poll every 30 minutes, keeping effective sunset accurate as conditions change
+- **Phase-aware countdown** — counts down to sunrise (night), effective sunset (day), or dusk (twilight) depending on current phase
 - **Air quality** — European AQI from Copernicus Atmosphere Monitoring Service (CAMS)
 - **Today's high & low** — current temperature with daily minimum
 - **Countdown clock** — hours and minutes until sunset or sunrise

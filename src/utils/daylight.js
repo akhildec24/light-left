@@ -89,7 +89,7 @@ export function getDaylightPhase(sunEvents, now = new Date()) {
  * Format a duration in milliseconds as "Xh Ym" or "Ym" or "Ys".
  */
 export function formatDuration(ms) {
-  if (ms <= 0) return '0m'
+  if (ms <= 0) return { hours: 0, minutes: 0, seconds: 0, label: '0m' }
   const totalSeconds = Math.floor(ms / 1000)
   const hours = Math.floor(totalSeconds / 3600)
   const minutes = Math.floor((totalSeconds % 3600) / 60)
