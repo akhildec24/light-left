@@ -12,6 +12,7 @@ export default function DaylightBar({
   sunrise,
   sunset,
   effectiveSunset,
+  dusk,
   now,
   phase,
 }) {
@@ -101,6 +102,24 @@ export default function DaylightBar({
           <span className="text-transparent">.</span>
         </div>
       )}
+
+      {/* Twilight ends info — shown during dusk or last 30 min of daylight */}
+      {dusk && !isNaN(dusk.getTime()) && (() => {
+        const minsToSunset = (sunsetTime - nowTime) / 60000
+        const minsToDusk = (dusk.getTime() - nowTime) / 60000
+        const showTwilight = phase === 'dusk' || (phase === 'day' && minsToSunset <= 30)
+        if (!showTwilight) return null
+        const label = minsToDusk > 0
+          ? `Twilight ends at ${formatTime(dusk)}`
+          : `Twilight ended at ${formatTime(dusk)}`
+        return (
+          <div className="flex justify-center mt-1.5">
+            <span className="text-[10px] text-charcoal/35 tabular-nums">
+              {label}
+            </span>
+          </div>
+        )
+      })()}
     </div>
   )
 }

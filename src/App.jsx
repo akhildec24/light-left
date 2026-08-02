@@ -143,8 +143,8 @@ export default function App() {
     )
   }
 
-  // --- Error state ---
-  if (geoError) {
+  // --- Error state (only if no cached coords) ---
+  if (geoError && !coords) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center bg-canvas px-6">
         <div className="flex flex-col items-center gap-6 max-w-sm text-center">
@@ -235,6 +235,7 @@ export default function App() {
             sunrise={sunEvents.sunrise}
             sunset={sunEvents.sunset}
             effectiveSunset={effectiveSunset}
+            dusk={sunEvents.dusk}
             now={now}
             phase={phase}
           />
